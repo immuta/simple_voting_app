@@ -1,0 +1,16 @@
+{
+    "name" : "cake-or-pie",
+    "version": "0.0.1",
+    "description": "An application to determine voting for cake or pie",
+    "main" : "index.js",
+    "scripts" : {
+        "start" : "node index.js"
+    },
+    "dependencies" : {
+        "getenv" :  "*",
+        "hapi" : "*",
+        "inert" : "*",
+        "uuid" : "*",
+        "redis" : "*"
+    }
+}

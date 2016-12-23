@@ -1,0 +1,51 @@
+<html>
+<head>
+<style>
+/* CSS */
+
+{ box-sizing: border-box; }
+table {
+    table-layout: fixed;
+width: 100%;
+border: 1px solid #ccc;
+        border-collapse: collapse;
+}
+col.small { width: 30%; }
+col.big { width: 70%; }
+th, td {
+border: 1px solid #ccc;
+        border-collapse: collapse;
+padding: 4px;
+}
+
+/* this is the style which does the work */
+td.percent {
+    text-align: center;
+    background-color: #eee;
+    /* dummy gradient with same from and to colours */
+    /* you can use any gradient to jazz it up */
+    background-image: linear-gradient(to right, #3399dd, #3399dd);
+    /* because gradients are images, we can use background-size property */
+    background-size: 1% 100%;         /* initial width of 1% and height 100%*/
+    background-repeat: no-repeat;     /* this is important to restrict the gradient */
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+<!-- Your table with second column containing percent values -->
+<table>
+<col class="small" /><col class="big" />
+<thead><tr><th>Item</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Cake</td><td class="percent">{{ results.cake }}</td></tr>
+<tr><td>Pie</td><td class="percent">{{ results.pie }}</td></tr>
+</tbody>
+</table>
+<script type="application/javascript">
+$("td.percent").each(function() {
+        var s = $(this).text() + ' 100%';
+        $(this).css({"background-size": s});
+        });
+</script>
+</html>
