@@ -5,6 +5,8 @@ import os
 from flask import Flask, render_template, request, make_response, g, jsonify
 import redis
 
+from werkzeug.contrib.fixers import ProxyFix
+
 
 app = Flask(__name__)
 
@@ -29,5 +31,6 @@ def get_results():
 
 
 if __name__ == '__main__':
+    app.wsgi_app = ProxyFix(app.wsgi_app)
     app.run(host=os.getenv('WEB_HOST', 'localhost'), port=os.getenv('WEB_PORT', 8000))
 
