@@ -1,7 +1,11 @@
 var Hapi = require("hapi");
-
-var server = new Hapi.Server();
 const getenv = require("getenv");
+
+var server = new Hapi.Server({
+    host: getenv("HTTP_HOST", "localhost"),
+    port:getenv.int("HTTP_PORT", 3000) 
+});
+
 const Inert = require("inert");
 const redis = require("redis");
 
@@ -15,62 +19,56 @@ redisClient.on("connect", function() {
 });
 
 // Register plugin
-server.register(Inert, () => {});
+server.register(Inert)
+    .then((() => {
+        server.route({
+            method: "GET",
+            path: "/",
+            handler: function (request, reply) {
+                return reply.file("./public/vote.html");
+            }
+        });
+        
+        server.route({
+            method: "GET",
+            path: "/pie.jpg",
+            handler: function(request, reply) {
+                return reply.file("./public/pie.jpg");
+            }
+        });
+        
+        server.route({
+            method: "GET",
+            path: "/cake.jpg",
+            handler: function(request, reply) {
+                return reply.file("./public/cake.jpg")
+            }
+        });
+        
+        server.route({
+            method: "GET",
+            path: "/cake",
+            handler: function (request, reply) {
+                 redisClient.rpush(["votes","cake"], function(err, reply) {
+                    console.log("Added " + reply + " votes to redis!");
+                 });
+                return "Thank you for your vote!";
+            }    
+        });
+        
+        server.route({
+            method: "GET",
+            path: "/pie",
+            handler: function (request, reply) {
+                 redisClient.rpush(["votes","pie"], function(err, reply) {
+                    console.log("Added " + reply + " votes to redis!");
+                 });
+                return "Thank you for your vote!";
+            }    
+        });
 
-server.connection({
-    host: getenv("HTTP_HOST", "localhost"),
-    port:getenv.int("HTTP_PORT", 3000) 
-});
-
-server.route({
-    method: "GET",
-    path: "/",
-    handler: function (request, reply) {
-        reply.file("./public/vote.html");
-    }
-});
-
-server.route({
-    method: "GET",
-    path: "/pie.jpg",
-    handler: function(request, reply) {
-        reply.file("./public/pie.jpg")
-    }
-});
-
-server.route({
-    method: "GET",
-    path: "/cake.jpg",
-    handler: function(request, reply) {
-        reply.file("./public/cake.jpg")
-    }
-});
-
-server.route({
-    method: "GET",
-    path: "/cake",
-    handler: function (request, reply) {
-         redisClient.rpush(["votes","cake"], function(err, reply) {
-            console.log("Added " + reply + " votes to redis!");
-         });
-        reply("Thank you for your vote!");
-    }    
-});
-
-server.route({
-    method: "GET",
-    path: "/pie",
-    handler: function (request, reply) {
-         redisClient.rpush(["votes","pie"], function(err, reply) {
-            console.log("Added " + reply + " votes to redis!");
-         });
-        reply("Thank you for your vote!");
-    }    
-});
-
-server.start(function (err) {
-    if(err) {
-        throw err
-    }
-    console.log("Server running at: ", server.info.uri);
-});
+        return server.start();
+    }))
+    .then(() => {
+        console.log("Server running at: ", server.info.uri);
+    });

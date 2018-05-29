@@ -8,7 +8,7 @@
     },
     "dependencies" : {
         "getenv" :  "*",
-        "hapi" : "*",
+        "hapi" : "^17.5",
         "inert" : "*",
         "uuid" : "*",
         "redis" : "*"
